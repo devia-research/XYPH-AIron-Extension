@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>AI Script Commander</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --secondary: #7c3aed;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --bg-dark: #1e293b;
+      --bg-darker: #0f172a;
+      --text-light: #f8fafc;
+      --text-gray: #94a3b8;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 800px;
+      height: 700px;
+      background: linear-gradient(135deg, var(--bg-darker), var(--bg-dark));
+      color: var(--text-light);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      overflow: hidden;
+    }
+
+    .container {
+      display: flex;
+      height: 100%;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      background: rgba(30, 41, 59, 0.8);
+      border-right: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      padding: 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .nav-section {
+      padding: 15px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .nav-title {
+      padding: 0 20px 10px;
+      font-size: 12px;
+      text-transform: uppercase;
+      color: var(--text-gray);
+    }
+
+    .nav-item {
+      padding: 8px 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-item:hover {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .nav-item.active {
+      background: var(--primary);
+      border-right: 3px solid var(--warning);
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tab-content {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .tab-pane {
+      display: none;
+    }
+
+    .tab-pane.active {
+      display: block;
+    }
+
+    /* Script Editor */
+    .editor-container {
+      background: rgba(15, 23, 42, 0.8);
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.1);
+      overflow: hidden;
+    }
+
+    .editor-header {
+      padding: 15px;
+      background: rgba(30, 41, 59, 0.8);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      justify-content: between;
+      align-items: center;
+    }
+
+    .script-type-selector {
+      display: flex;
+      gap: 10px;
+    }
+
+    .script-type {
+      padding: 5px 15px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.1);
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .script-type.active {
+      background: var(--primary);
+    }
+
+    .editor-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.1);
+      color: var(--text-light);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-warning {
+      background: var(--warning);
+      color: white;
+    }
+
+    .editor-body {
+      padding: 0;
+    }
+
+    #scriptInput {
+      width: 100%;
+      height: 300px;
+      background: transparent;
+      border: none;
+      color: var(--text-light);
+      font-family: 'Cascadia Code', 'Consolas', monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      padding: 20px;
+      resize: none;
+      outline: none;
+    }
+
+    /* AI Panel */
+    .ai-panel {
+      margin-top: 20px;
+      background: rgba(15, 23, 42, 0.8);
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 20px;
+    }
+
+    .ai-header {
+      display: flex;
+      justify-content: between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .api-config {
+      display: flex;
+      gap: 10px;
+    }
+
+    .api-input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 6px;
+      background: rgba(255,255,255,0.1);
+      color: var(--text-light);
+    }
+
+    .ai-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .ai-btn {
+      padding: 6px 12px;
+      font-size: 11px;
+    }
+
+    /* Results Panel */
+    .results-panel {
+      margin-top: 20px;
+      background: rgba(15, 23, 42, 0.8);
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 20px;
+    }
+
+    .results-header {
+      display: flex;
+      justify-content: between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    #executionResult {
+      background: rgba(0,0,0,0.3);
+      border-radius: 6px;
+      padding: 15px;
+      font-family: 'Cascadia Code', 'Consolas', monospace;
+      font-size: 12px;
+      line-height: 1.4;
+      max-height: 200px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+
+    /* Auto-fill Panel */
+    .auto-fill-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .form-preview {
+      background: rgba(15, 23, 42, 0.8);
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    .form-field {
+      margin-bottom: 15px;
+    }
+
+    .form-field label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 12px;
+      color: var(--text-gray);
+    }
+
+    .form-field input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 6px;
+      background: rgba(255,255,255,0.1);
+      color: var(--text-light);
+    }
+
+    /* Animations */
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+
+    .loading {
+      animation: pulse 1.5s infinite;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="header">
+        <div class="logo">
+          <span>🤖</span>
+          <span>AI Script Commander</span>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-title">Scripting</div>
+        <div class="nav-item active" data-tab="script-editor">
+          <span>📝 Éditeur de Script</span>
+        </div>
+        <div class="nav-item" data-tab="auto-fill">
+          <span>📊 Auto-remplissage</span>
+        </div>
+        <div class="nav-item" data-tab="web-scraping">
+          <span>🌐 Web Scraping</span>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-title">Scripts Prédéfinis</div>
+        <div class="nav-item" data-script="file-organizer">
+          <span>📁 Organisateur Fichiers</span>
+        </div>
+        <div class="nav-item" data-script="web-automation">
+          <span>🔄 Automation Web</span>
+        </div>
+        <div class="nav-item" data-script="data-backup">
+          <span>💾 Sauvegarde Données</span>
+        </div>
+        <div class="nav-item" data-script="system-info">
+          <span>🖥️ Info Système</span>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-title">Outils</div>
+        <div class="nav-item" data-tab="settings">
+          <span>⚙️ Paramètres</span>
+        </div>
+        <div class="nav-item" data-action="export-scripts">
+          <span>📤 Exporter Scripts</span>
+        </div>
+        <div class="nav-item" data-action="import-scripts">
+          <span>📥 Importer Scripts</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Script Editor Tab -->
+      <div class="tab-content">
+        <div class="tab-pane active" id="script-editor">
+          <div class="editor-container">
+            <div class="editor-header">
+              <div class="script-type-selector">
+                <div class="script-type active" data-type="powershell">PowerShell</div>
+                <div class="script-type" data-type="python">Python</div>
+                <div class="script-type" data-type="bash">Bash</div>
+                <div class="script-type" data-type="javascript">JavaScript</div>
+                <div class="script-type" data-type="cmd">CMD</div>
+              </div>
+              <div class="editor-actions">
+                <button class="btn btn-primary" id="executeScript">⚡ Exécuter</button>
+                <button class="btn btn-secondary" id="saveScript">💾 Sauvegarder</button>
+                <button class="btn btn-secondary" id="clearScript">🗑️ Effacer</button>
+              </div>
+            </div>
+            <div class="editor-body">
+              <textarea id="scriptInput" placeholder="Écrivez votre script ici ou utilisez l'IA pour en générer un..."></textarea>
+            </div>
+          </div>
+
+          <div class="ai-panel">
+            <div class="ai-header">
+              <h3>🤖 Assistant IA DeepSeek</h3>
+              <div class="api-config">
+                <input type="password" id="apiKey" placeholder="Clé API DeepSeek" class="api-input">
+                <button class="btn btn-secondary" id="saveApiKey">💾</button>
+              </div>
+            </div>
+            <div class="ai-actions">
+              <button class="btn btn-warning ai-btn" data-action="generate-script">🎯 Générer Script</button>
+              <button class="btn btn-warning ai-btn" data-action="optimize-script">⚡ Optimiser</button>
+              <button class="btn btn-warning ai-btn" data-action="explain-script">📖 Expliquer</button>
+              <button class="btn btn-warning ai-btn" data-action="debug-script">🐛 Déboguer</button>
+              <button class="btn btn-warning ai-btn" data-action="convert-script">🔄 Convertir</button>
+            </div>
+          </div>
+
+          <div class="results-panel">
+            <div class="results-header">
+              <h3>📊 Résultats d'Exécution</h3>
+              <button class="btn btn-secondary" id="clearResults">Effacer</button>
+            </div>
+            <div id="executionResult">
+              Les résultats de l'exécution apparaîtront ici...
+            </div>
+          </div>
+        </div>
+
+        <!-- Auto-fill Tab -->
+        <div class="tab-pane" id="auto-fill">
+          <div class="auto-fill-panel">
+            <div class="form-preview">
+              <h3>📝 Aperçu du Formulaire</h3>
+              <div class="form-field">
+                <label>Nom d'utilisateur</label>
+                <input type="text" id="preview-username">
+              </div>
+              <div class="form-field">
+                <label>Email</label>
+                <input type="email" id="preview-email">
+              </div>
+              <div class="form-field">
+                <label>Mot de passe</label>
+                <input type="password" id="preview-password">
+              </div>
+              <div class="form-field">
+                <label>Prénom</label>
+                <input type="text" id="preview-firstname">
+              </div>
+              <div class="form-field">
+                <label>Nom</label>
+                <input type="text" id="preview-lastname">
+              </div>
+              <button class="btn btn-primary" id="testAutoFill">Tester le Remplissage</button>
+            </div>
+            <div class="form-preview">
+              <h3>⚙️ Configuration</h3>
+              <div class="form-field">
+                <label>Type de données</label>
+                <select id="dataType" class="api-input">
+                  <option value="french">Français</option>
+                  <option value="international">International</option>
+                  <option value="custom">Personnalisé</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label>Champs à remplir</label>
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label><input type="checkbox" name="fields" value="username" checked> Nom d'utilisateur</label>
+                  <label><input type="checkbox" name="fields" value="email" checked> Email</label>
+                  <label><input type="checkbox" name="fields" value="password" checked> Mot de passe</label>
+                  <label><input type="checkbox" name="fields" value="personal" checked> Infos personnelles</label>
+                  <label><input type="checkbox" name="fields" value="address"> Adresse</label>
+                </div>
+              </div>
+              <button class="btn btn-success" id="executeAutoFill">🔄 Remplir sur la Page</button>
+              <button class="btn btn-warning" id="generateAutoFillScript">🤖 Générer Script Auto-fill</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Web Scraping Tab -->
+        <div class="tab-pane" id="web-scraping">
+          <div class="editor-container">
+            <div class="editor-header">
+              <h3>🌐 Web Scraping Automatique</h3>
+            </div>
+            <div class="editor-body" style="padding: 20px;">
+              <div class="form-field">
+                <label>URL à scraper</label>
+                <input type="url" id="scrapeUrl" placeholder="https://example.com" class="api-input">
+              </div>
+              <div class="form-field">
+                <label>Données à extraire</label>
+                <select id="scrapeType" class="api-input">
+                  <option value="scripts">Scripts et Code</option>
+                  <option value="links">Liens et URLs</option>
+                  <option value="texts">Textes et Contenu</option>
+                  <option value="images">Images</option>
+                  <option value="tables">Tableaux de données</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label>Filtre de sélection</label>
+                <input type="text" id="scrapeFilter" placeholder="script, .js, .py, etc." class="api-input">
+              </div>
+              <div class="ai-actions">
+                <button class="btn btn-primary" id="startScraping">🚀 Démarrer le Scraping</button>
+                <button class="btn btn-warning" id="generateScraper">🤖 Générer Scraper IA</button>
+                <button class="btn btn-secondary" id="downloadScraped">📥 Télécharger Résultats</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div class="tab-pane" id="settings">
+          <div class="editor-container">
+            <div class="editor-header">
+              <h3>⚙️ Paramètres</h3>
+            </div>
+            <div class="editor-body" style="padding: 20px;">
+              <div class="form-field">
+                <label>Langue par défaut</label>
+                <select id="defaultLanguage" class="api-input">
+                  <option value="fr">Français</option>
+                  <option value="en">English</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label>Script par défaut au démarrage</label>
+                <select id="defaultScript" class="api-input">
+                  <option value="none">Aucun</option>
+                  <option value="file-organizer">Organisateur de fichiers</option>
+                  <option value="web-automation">Automation web</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label>Format de sauvegarde</label>
+                <select id="backupFormat" class="api-input">
+                  <option value="zip">ZIP compressé</option>
+                  <option value="folder">Dossier</option>
+                </select>
+              </div>
+              <button class="btn btn-primary" id="saveSettings">💾 Sauvegarder Paramètres</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+{
+  "total_tests": 18,
+  "exit_code": 2,
+  "details": [
+    {
+      "Message": "",
+      "Result": "FAIL",
+      "Test": "manifest.json existe"
+    },
+    {
+      "Message": "",
+      "Result": "FAIL",
+      "Test": "background.js existe"
+    },
+    {
+      "Message": "",
+      "Result": "FAIL",
+      "Test": "sidebar.js existe"
+    },
+    {
+      "Message": "",
+      "Result": "FAIL",
+      "Test": "popup.html existe"
+    },
+    {
+      "Message": "",
+      "Result": "FAIL",
+      "Test": "popup.js existe"
+    },
+    {
+      "Message": "Version manifest incorrecte",
+      "Result": "FAIL",
+      "Test": "Manifest version 3"
+    },
+    {
+      "Message": "Nom manquant",
+      "Result": "FAIL",
+      "Test": "Nom de l'extension défini"
+    },
+    {
+      "Message": "Version manquante",
+      "Result": "FAIL",
+      "Test": "Version définie"
+    },
+    {
+      "Message": "Permission activeTab manquante",
+      "Result": "FAIL",
+      "Test": "Permission activeTab"
+    },
+    {
+      "Message": "Action manquante",
+      "Result": "FAIL",
+      "Test": "Action définie"
+    },
+    {
+      "Message": "",
+      "Result": "FAIL",
+      "Test": "background.js accessible"
+    },
+    {
+      "Message": "",
+      "Result": "FAIL",
+      "Test": "sidebar.js accessible"
+    },
+    {
+      "Message": "",
+      "Result": "FAIL",
+      "Test": "popup.js accessible"
+    },
+    {
+      "Message": "",
+      "Result": "FAIL",
+      "Test": "popup.html accessible"
+    },
+    {
+      "Message": "",
+      "Result": "FAIL",
+      "Test": "Fichier sidebar HTML présent"
+    },
+    {
+      "Message": "",
+      "Result": "PASS",
+      "Test": "api_endpoints_test.json syntaxe JSON valide"
+    },
+    {
+      "Message": "",
+      "Result": "PASS",
+      "Test": "package.json syntaxe JSON valide"
+    },
+    {
+      "Message": "",
+      "Result": "PASS",
+      "Test": "tsconfig.json syntaxe JSON valide"
+    }
+  ],
+  "timestamp": "2025-11-03 01:23:22",
+  "failed": 15,
+  "success_rate": 16.7,
+  "passed": 3
+}

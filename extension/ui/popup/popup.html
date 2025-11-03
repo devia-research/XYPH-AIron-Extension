@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>AI Script Commander</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 400px;
+            min-height: 500px;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: #f8fafc;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #334155;
+        }
+
+        h1 {
+            font-size: 20px;
+            color: #60a5fa;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(124, 58, 237, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(16, 185, 129, 0.3);
+        }
+
+        .section {
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #94a3b8;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status {
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            margin-top: 10px;
+            border-left: 4px solid #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .quick-action {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .quick-action button {
+            padding: 8px;
+            font-size: 12px;
+        }
+
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 11px;
+            color: #64748b;
+            padding-top: 15px;
+            border-top: 1px solid #334155;
+        }
+
+        .icon {
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🤖 AI Script Commander</h1>
+        <p class="subtitle">Powered by DeepSeek AI</p>
+    </div>
+
+    <div class="section">
+        <div class="section-title">🚀 Actions Principales</div>
+        <button class="btn btn-primary" id="openSidebar">
+            <span class="icon">📋</span>
+            Ouvrir le Panneau Latéral
+        </button>
+        <div class="quick-action">
+            <button class="btn btn-secondary" id="newScript">✨ Nouveau</button>
+            <button class="btn btn-success" id="settings">⚙️ Config</button>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">⚡ Raccourcis Rapides</div>
+        <button class="btn btn-secondary" id="quickGenerate">
+            <span class="icon">🎯</span>
+            Générer Script Rapide
+        </button>
+        <button class="btn btn-secondary" id="quickAutoFill">
+            <span class="icon">📝</span>
+            Auto-Fill Formulaire
+        </button>
+        <button class="btn btn-secondary" id="quickScrape">
+            <span class="icon">🌐</span>
+            Web Scraping
+        </button>
+    </div>
+
+    <div class="status" id="statusMessage">
+        ✅ Extension prête et opérationnelle
+    </div>
+
+    <div class="footer">
+        Version 3.0 | AI Script Commander
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>

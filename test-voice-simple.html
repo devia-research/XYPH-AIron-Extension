@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Voice - AIron Debug</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .btn {
+            width: 100%;
+            padding: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 10px 0;
+        }
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .btn-danger {
+            background: #f56565;
+            color: white;
+        }
+        .status {
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            background: #f7fafc;
+            border-left: 4px solid #667eea;
+        }
+        .result {
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            background: #e6fffa;
+            border-left: 4px solid #38b2ac;
+            min-height: 100px;
+        }
+        .log {
+            background: #2d3748;
+            color: #68d391;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 3px solid #68d391;
+            padding-left: 10px;
+        }
+        .log-error {
+            border-left-color: #fc8181;
+            color: #fc8181;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎤 Test Voice Assistant</h1>
+        
+        <button id="voiceBtn" class="btn btn-primary">
+            🎤 Cliquez et Parlez
+        </button>
+        
+        <div class="status">
+            <strong>📊 Status:</strong>
+            <div id="status">En attente...</div>
+        </div>
+        
+        <div class="result">
+            <strong>📝 Transcription:</strong>
+            <div id="result">Cliquez sur le bouton et dites quelque chose...</div>
+        </div>
+        
+        <div class="log">
+            <strong>🔍 Console Debug:</strong>
+            <div id="logs"></div>
+        </div>
+    </div>
+
+    <script>
+        let recognition = null;
+        let isListening = false;
+
+        function addLog(msg, isError = false) {
+            const logEntry = document.createElement('div');
+            logEntry.className = isError ? 'log-entry log-error' : 'log-entry';
+            logEntry.textContent = '[' + new Date().toLocaleTimeString() + '] ' + msg;
+            document.getElementById('logs').appendChild(logEntry);
+            document.getElementById('logs').scrollTop = document.getElementById('logs').scrollHeight;
+            console.log(msg);
+        }
+
+        function initRecognition() {
+            addLog('Initialisation Speech Recognition...');
+            
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                addLog('ERREUR: Speech Recognition non supportée!', true);
+                document.getElementById('status').textContent = 'Non supporté sur ce navigateur';
+                document.getElementById('result').textContent = 'Utilisez Chrome, Edge ou Safari';
+                return null;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.lang = 'fr-FR';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            
+            addLog('Speech Recognition créée avec succès');
+            addLog('Langue: fr-FR');
+            
+            return recognition;
+        }
+
+        function startListening() {
+            addLog('=== DEMARRAGE ===');
+            
+            if (!recognition) {
+                recognition = initRecognition();
+                if (!recognition) return;
+            }
+
+            if (isListening) {
+                addLog('Arrêt en cours...');
+                stopListening();
+                return;
+            }
+
+            document.getElementById('status').textContent = '🎤 En écoute... Parlez maintenant!';
+            document.getElementById('voiceBtn').textContent = '⏹️ Arrêter';
+            document.getElementById('voiceBtn').className = 'btn btn-danger';
+            isListening = true;
+
+            recognition.onstart = function() {
+                addLog('Ecoute démarrée!');
+            };
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                const confidence = event.results[0][0].confidence;
+                
+                addLog('Transcription reçue: ' + transcript);
+                addLog('Confiance: ' + (confidence * 100).toFixed(1) + '%');
+                
+                document.getElementById('status').textContent = '✅ Transcription réussie!';
+                document.getElementById('result').innerHTML = 
+                    '<strong>Vous avez dit:</strong><br>"' + transcript + '"<br><br>' +
+                    '<strong>Confiance:</strong> ' + (confidence * 100).toFixed(1) + '%';
+                
+                setTimeout(stopListening, 2000);
+            };
+
+            recognition.onerror = function(event) {
+                addLog('ERREUR: ' + event.error, true);
+                
+                let errorMsg = '';
+                if (event.error === 'no-speech') {
+                    errorMsg = 'Aucune parole détectée';
+                } else if (event.error === 'audio-capture') {
+                    errorMsg = 'Microphone non accessible';
+                } else if (event.error === 'not-allowed') {
+                    errorMsg = 'Permission microphone refusée';
+                } else {
+                    errorMsg = 'Erreur: ' + event.error;
+                }
+                
+                document.getElementById('status').textContent = '❌ ' + errorMsg;
+                document.getElementById('result').textContent = errorMsg;
+                
+                setTimeout(stopListening, 3000);
+            };
+
+            recognition.onend = function() {
+                addLog('Reconnaissance terminée');
+                if (isListening) {
+                    stopListening();
+                }
+            };
+
+            try {
+                addLog('Appel recognition.start()...');
+                recognition.start();
+                addLog('start() exécuté!');
+            } catch (error) {
+                addLog('ERREUR start(): ' + error.message, true);
+                document.getElementById('status').textContent = '❌ Erreur: ' + error.message;
+                stopListening();
+            }
+        }
+
+        function stopListening() {
+            addLog('=== ARRET ===');
+            isListening = false;
+            document.getElementById('voiceBtn').textContent = '🎤 Cliquez et Parlez';
+            document.getElementById('voiceBtn').className = 'btn btn-primary';
+            
+            if (recognition) {
+                try {
+                    recognition.stop();
+                } catch (e) {
+                    addLog('Recognition déjà arrêtée');
+                }
+            }
+        }
+
+        document.getElementById('voiceBtn').addEventListener('click', startListening);
+
+        addLog('=== PAGE CHARGEE ===');
+        addLog('Prêt à tester!');
+        
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            addLog('✅ Speech Recognition DISPONIBLE');
+            document.getElementById('status').textContent = '✅ Prêt - Cliquez pour commencer';
+        } else {
+            addLog('❌ Speech Recognition NON DISPONIBLE', true);
+            document.getElementById('status').textContent = '❌ Non supporté';
+        }
+    </script>
+</body>
+</html>

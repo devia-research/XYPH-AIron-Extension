@@ -1,0 +1,93 @@
+[
+  {
+    "Status": "Auth Required",
+    "StatusCode": 401,
+    "Details": "Response status code does not indicate success: 401 (Unauthorized).",
+    "Name": "DeepSeek v1",
+    "Url": "https://api.deepseek.com/v1/chat/completions"
+  },
+  {
+    "Status": "Auth Required",
+    "StatusCode": 401,
+    "Details": "Response status code does not indicate success: 401 (Unauthorized).",
+    "Name": "DeepSeek direct",
+    "Url": "https://api.deepseek.com/chat/completions"
+  },
+  {
+    "StatusCode": 404,
+    "Name": "DeepSeek base",
+    "Details": "Response status code does not indicate success: 404 (Not Found).",
+    "Status": "Error",
+    "Url": "https://api.deepseek.com"
+  },
+  {
+    "Status": "Auth Required",
+    "StatusCode": 401,
+    "Details": "Response status code does not indicate success: 401 (Unauthorized).",
+    "Name": "DeepSeek models",
+    "Url": "https://api.deepseek.com/v1/models"
+  },
+  {
+    "StatusCode": 404,
+    "Name": "DeepSeek health",
+    "Details": "Response status code does not indicate success: 404 (Not Found).",
+    "Status": "Error",
+    "Url": "https://api.deepseek.com/health"
+  },
+  {
+    "StatusCode": 200,
+    "Name": "Ollama Health",
+    "Details": "Endpoint accessible",
+    "Status": "OK",
+    "Url": "http://localhost:11434"
+  },
+  {
+    "StatusCode": 200,
+    "Name": "Ollama API",
+    "Details": "Endpoint accessible",
+    "Status": "OK",
+    "Url": "http://localhost:11434/api/tags"
+  },
+  {
+    "StatusCode": 405,
+    "Name": "Ollama Chat",
+    "Details": "Response status code does not indicate success: 405 (Method Not Allowed).",
+    "Status": "Error",
+    "Url": "http://localhost:11434/api/chat"
+  },
+  {
+    "StatusCode": 405,
+    "Name": "Ollama Generate",
+    "Details": "Response status code does not indicate success: 405 (Method Not Allowed).",
+    "Status": "Error",
+    "Url": "http://localhost:11434/api/generate"
+  },
+  {
+    "StatusCode": 404,
+    "Name": "Groq API",
+    "Details": "Response status code does not indicate success: 404 (Not Found).",
+    "Status": "Error",
+    "Url": "https://api.groq.com/openai/v1/chat/completions"
+  },
+  {
+    "Status": "Auth Required",
+    "StatusCode": 401,
+    "Details": "Response status code does not indicate success: 401 (Unauthorized).",
+    "Name": "Groq Models",
+    "Url": "https://api.groq.com/openai/v1/models"
+  },
+  {
+    "Status": "Auth Required",
+    "StatusCode": 401,
+    "Details": "Response status code does not indicate success: 401 (Unauthorized).",
+    "Name": "OpenAI API",
+    "Url": "https://api.openai.com/v1/chat/completions"
+  },
+  {
+    "Status": "Auth Required",
+    "StatusCode": 401,
+    "Details": "Response status code does not indicate success: 401 (Unauthorized).",
+    "Name": "OpenAI Models",
+    "Url": "https://api.openai.com/v1/models"
+  }
+]

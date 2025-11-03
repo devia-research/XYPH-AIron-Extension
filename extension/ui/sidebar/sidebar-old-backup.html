@@ -1,0 +1,643 @@
+6<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>AI Script Commander</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --secondary: #7c3aed;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --bg-dark: #0f172a;
+      --bg-darker: #020617;
+      --bg-panel: #1e293b;
+      --text-light: #f8fafc;
+      --text-gray: #94a3b8;
+      --border: #334155;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 600px;
+      height: 100vh;
+      background: var(--bg-dark);
+      color: var(--text-light);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      overflow: hidden;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      background: linear-gradient(135deg, var(--bg-darker), var(--bg-dark));
+    }
+
+    /* Header */
+    .header {
+      background: var(--bg-panel);
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header h1 {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-light);
+    }
+
+    .status-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--success);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* Navigation Tabs */
+    .nav-tabs {
+      display: flex;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab {
+      padding: 15px 20px;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .tab:hover {
+      background: rgba(255,255,255,0.05);
+    }
+
+    .tab.active {
+      border-bottom-color: var(--primary);
+      background: rgba(37, 99, 235, 0.1);
+    }
+
+    /* Tab Content */
+    .tab-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .tab-pane {
+      display: none;
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .tab-pane.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Sections */
+    .section {
+      background: var(--bg-panel);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+    }
+
+    .section h3 {
+      margin-bottom: 15px;
+      color: var(--text-light);
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .section h4 {
+      margin-bottom: 10px;
+      color: var(--text-gray);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    /* Agent Controls */
+    .agent-controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .quick-task-examples {
+      margin-top: 15px;
+    }
+
+    .task-examples {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .task-example {
+      background: var(--bg-darker);
+      border: 1px solid var(--border);
+      color: var(--text-light);
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+
+    .task-example:hover {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-secondary {
+      background: var(--secondary);
+      color: white;
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-warning {
+      background: var(--warning);
+      color: white;
+    }
+
+    .btn-error {
+      background: var(--error);
+      color: white;
+    }
+
+    /* Controls */
+    .script-controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    select {
+      background: var(--bg-darker);
+      border: 1px solid var(--border);
+      color: var(--text-light);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      min-width: 150px;
+    }
+
+    /* Text Areas */
+    textarea {
+      width: 100%;
+      min-height: 200px;
+      background: var(--bg-darker);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 15px;
+      color: var(--text-light);
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 13px;
+      line-height: 1.5;
+      resize: vertical;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+    }
+
+    /* Preset Scripts */
+    .preset-scripts {
+      margin-top: 15px;
+    }
+
+    .preset-btn {
+      background: var(--bg-darker);
+      border: 1px solid var(--border);
+      color: var(--text-light);
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      margin-right: 8px;
+      margin-bottom: 8px;
+      transition: all 0.2s;
+    }
+
+    .preset-btn:hover {
+      background: var(--secondary);
+      border-color: var(--secondary);
+    }
+
+    /* Results */
+    .results-container {
+      background: var(--bg-darker);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      min-height: 150px;
+      max-height: 300px;
+      overflow-y: auto;
+      padding: 15px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .result-item {
+      margin-bottom: 10px;
+      padding: 8px;
+      border-radius: 4px;
+      border-left: 3px solid;
+    }
+
+    .result-success {
+      background: rgba(16, 185, 129, 0.1);
+      border-left-color: var(--success);
+    }
+
+    .result-error {
+      background: rgba(239, 68, 68, 0.1);
+      border-left-color: var(--error);
+    }
+
+    .result-warning {
+      background: rgba(245, 158, 11, 0.1);
+      border-left-color: var(--warning);
+    }
+
+    .result-info {
+      background: rgba(37, 99, 235, 0.1);
+      border-left-color: var(--primary);
+    }
+
+    /* Settings Form */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      color: var(--text-light);
+    }
+
+    .form-group input {
+      width: 100%;
+      background: var(--bg-darker);
+      border: 1px solid var(--border);
+      color: var(--text-light);
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+    }
+
+    /* Settings Panels */
+    .settings-panels {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .panel {
+      background: var(--bg-darker);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    .panel h4 {
+      margin-bottom: 15px;
+      color: var(--text-light);
+      font-size: 16px;
+    }
+
+    /* Context/Role Manager */
+    .context-list, .role-list {
+      margin-top: 10px;
+    }
+
+    .context-item, .role-item {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .item-content {
+      flex: 1;
+    }
+
+    .item-name {
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .item-description {
+      font-size: 12px;
+      color: var(--text-gray);
+    }
+
+    .item-actions {
+      display: flex;
+      gap: 5px;
+    }
+
+    .btn-small {
+      padding: 4px 8px;
+      font-size: 12px;
+      border-radius: 4px;
+    }
+
+    /* Animation */
+    .fade-in {
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Loading Spinner */
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: var(--primary);
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-darker);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-gray);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>🤖 AI Script Commander</h1>
+      <div class="status-indicator"></div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="nav-tabs">
+      <div class="tab active" data-tab="executor">
+        ⚡ Agent IA
+      </div>
+      <div class="tab" data-tab="settings">
+        ⚙️ Paramètres
+      </div>
+      <div class="tab" data-tab="history">
+        📚 Historique
+      </div>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+      <!-- Executor Tab -->
+      <div id="executor-tab" class="tab-pane active">
+        <div class="section">
+          <h3>🤖 Agent IA - Générateur de Scripts</h3>
+          <div class="agent-controls">
+            <button id="generateTaskBtn" class="btn btn-primary">
+              ✨ Générer Script IA
+            </button>
+            <button id="chatBtn" class="btn btn-secondary" onclick="sidebar.showChatInterface()">
+              💬 Parler avec XYPH
+            </button>
+            <button id="analyzeBtn" class="btn btn-secondary">
+              🔍 Analyser Script
+            </button>
+          </div>
+          
+          <div class="quick-task-examples">
+            <h4>💡 Exemples de tâches :</h4>
+            <div class="task-examples">
+              <button class="task-example" onclick="sidebar.quickGenerate('Organiser mes fichiers de téléchargement par type')">
+                📁 Organiser fichiers
+              </button>
+              <button class="task-example" onclick="sidebar.quickGenerate('Sauvegarder automatiquement mes dossiers importants')">
+                💾 Sauvegarde auto
+              </button>
+              <button class="task-example" onclick="sidebar.quickGenerate('Nettoyer les fichiers temporaires du système')">
+                🧹 Nettoyage système
+              </button>
+              <button class="task-example" onclick="sidebar.quickGenerate('Extraire des données d un site web')">
+                🕷️ Web scraping
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>📝 Éditeur de Script</h3>
+          <div class="script-controls">
+            <select id="scriptTypeSelect">
+              <option value="powershell">PowerShell (.ps1)</option>
+              <option value="python">Python (.py)</option>
+              <option value="bash">Bash (.sh)</option>
+              <option value="javascript">JavaScript (.js)</option>
+              <option value="cmd">CMD (.bat)</option>
+            </select>
+            
+            <button id="executeBtn" class="btn btn-success">▶️ Exécuter</button>
+            <button id="saveBtn" class="btn btn-primary">💾 Sauvegarder</button>
+            <button id="loadBtn" class="btn btn-secondary">📂 Charger</button>
+          </div>
+          
+          <textarea id="scriptInput" placeholder="Écrivez votre script ici ou utilisez le générateur IA..."></textarea>
+          
+          <div class="preset-scripts">
+            <h4>📚 Scripts Prédéfinis :</h4>
+            <button onclick="sidebar.loadPresetScript('file-organizer')" class="preset-btn">
+              📁 Organisateur Fichiers
+            </button>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>📊 Résultats</h3>
+          <div id="results" class="results-container"></div>
+        </div>
+      </div>
+
+      <!-- Settings Tab -->
+      <div id="settings-tab" class="tab-pane">
+        <div class="settings-panels">
+          <!-- API Configuration -->
+          <div class="panel">
+            <h4>🔑 Configuration API</h4>
+            <div class="form-group">
+              <label for="apiKey">Clé API DeepSeek :</label>
+              <input type="password" id="apiKey" placeholder="sk-...">
+            </div>
+            <div class="form-group">
+              <label for="modelSelect">Modèle :</label>
+              <select id="modelSelect">
+                <option value="deepseek-coder">DeepSeek Coder</option>
+                <option value="deepseek-chat">DeepSeek Chat</option>
+              </select>
+            </div>
+            <button id="saveApiBtn" class="btn btn-primary">💾 Sauvegarder</button>
+          </div>
+
+          <!-- Context Manager -->
+          <div class="panel">
+            <h4>📋 Gestionnaire de Contextes</h4>
+            <div class="form-group">
+              <label for="contextName">Nom du contexte :</label>
+              <input type="text" id="contextName" placeholder="Ex: Développement Web">
+            </div>
+            <div class="form-group">
+              <label for="contextDescription">Description :</label>
+              <textarea id="contextDescription" placeholder="Description du contexte..." rows="3"></textarea>
+            </div>
+            <button id="addContextBtn" class="btn btn-primary">➕ Ajouter Contexte</button>
+            
+            <div class="context-list" id="contextList">
+              <!-- Contexts will be populated here -->
+            </div>
+          </div>
+
+          <!-- Role Manager -->
+          <div class="panel">
+            <h4>👤 Gestionnaire de Rôles</h4>
+            <div class="form-group">
+              <label for="roleName">Nom du rôle :</label>
+              <input type="text" id="roleName" placeholder="Ex: Expert DevOps">
+            </div>
+            <div class="form-group">
+              <label for="rolePrompt">Prompt du rôle :</label>
+              <textarea id="rolePrompt" placeholder="Tu es un expert DevOps spécialisé en..." rows="3"></textarea>
+            </div>
+            <button id="addRoleBtn" class="btn btn-primary">➕ Ajouter Rôle</button>
+            
+            <div class="role-list" id="roleList">
+              <!-- Roles will be populated here -->
+            </div>
+          </div>
+
+          <!-- Training Scripts -->
+          <div class="panel">
+            <h4>🎓 Scripts d'Entraînement</h4>
+            <div class="form-group">
+              <label for="trainingCategory">Catégorie :</label>
+              <select id="trainingCategory">
+                <option value="file-management">Gestion de fichiers</option>
+                <option value="web-automation">Automatisation web</option>
+                <option value="system-admin">Administration système</option>
+                <option value="data-processing">Traitement de données</option>
+                <option value="security">Sécurité</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="trainingScript">Script d'exemple :</label>
+              <textarea id="trainingScript" placeholder="Script d'exemple pour l'entraînement..." rows="5"></textarea>
+            </div>
+            <button id="addTrainingBtn" class="btn btn-primary">➕ Ajouter à l'Entraînement</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- History Tab -->
+      <div id="history-tab" class="tab-pane">
+        <div class="section">
+          <h3>📚 Historique des Scripts</h3>
+          <div id="historyList" class="history-list">
+            <!-- History items will be populated here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="sidebar.js"></script>
+</body>
+</html>

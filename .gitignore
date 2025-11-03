@@ -1,0 +1,54 @@
+# XYPH Project .gitignore
+
+# Tests temporaires
+tests/results/*.json
+tests/data/temp-*
+
+# Logs et debug
+*.log
+logs/
+debug/
+
+# Configuration sensible (NE JAMAIS COMMITTER)
+config/*-keys.json
+config/api-keys.*
+**/*api-key*
+**/*secret*
+**/*password*
+
+# Sauvegardes
+*.backup.*
+backup/
+*.bak
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# Extension temporaires
+extension/*.crx
+extension/key.pem
+extension/packed/
+
+# Scripts temporaires
+scripts/temp-*
+scripts/debug-*
+
+# Node modules (si applicable)
+node_modules/
+package-lock.json
+
+# Cache et temp
+.cache/
+.temp/
+temp/
+
+# Résultats de tests anciens
+test-results-*.jsonkey_api.txt

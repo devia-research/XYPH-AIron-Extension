@@ -1,0 +1,66 @@
+{
+  "name": "AIron",
+  "short_name": "AIron",
+  "version": "3.0.0",
+  "description": "IA puissante pour générer, analyser et automatiser vos scripts et pages web",
+  "manifest_version": 3,
+  "host_permissions": [
+    "https://*.chatgpt.com/*",
+    "https://*.openai.com/*",
+    "https://*.deepseek.com/*",
+    "<all_urls>"
+  ],
+  "permissions": [
+    "storage",
+    "unlimitedStorage",
+    "webRequest",
+    "scripting",
+    "activeTab",
+    "tabs",
+    "downloads",
+    "offscreen",
+    "sidePanel"
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "XYPH Agent",
+    "default_popup": "popup.html"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "options_ui": {
+    "open_in_tab": true,
+    "page": "options.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "inject.js",
+        "assets/*",
+        "models/*"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  }
+}

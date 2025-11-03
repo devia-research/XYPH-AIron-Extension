@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>AI Script Commander</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --secondary: #7c3aed;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --bg-dark: #0f172a;
+      --bg-darker: #020617;
+      --bg-panel: #1e293b;
+      --text-light: #f8fafc;
+      --text-gray: #94a3b8;
+      --border: #334155;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 600px;
+      min-height: 100vh;
+      background: var(--bg-dark);
+      color: var(--text-light);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      overflow-x: hidden;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--bg-darker), var(--bg-dark));
+    }
+
+    .header {
+      background: var(--bg-panel);
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header h1 {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text-light);
+      margin-bottom: 5px;
+    }
+
+    .status {
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      margin-top: 10px;
+      border-left: 4px solid var(--success);
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    .section {
+      background: var(--bg-panel);
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px;
+      border: 1px solid var(--border);
+    }
+
+    .section h3 {
+      margin-bottom: 15px;
+      color: var(--text-light);
+      font-size: 16px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text-gray);
+      font-size: 14px;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg-darker);
+      color: var(--text-light);
+      font-size: 14px;
+      font-family: 'Consolas', monospace;
+    }
+
+    textarea {
+      min-height: 200px;
+      resize: vertical;
+    }
+
+    .btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s;
+      margin: 5px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: var(--secondary);
+      color: white;
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-danger {
+      background: var(--error);
+      color: white;
+    }
+
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 15px;
+    }
+
+    .result-area {
+      margin-top: 20px;
+      padding: 15px;
+      background: var(--bg-darker);
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      min-height: 100px;
+      font-family: 'Consolas', monospace;
+      font-size: 13px;
+      white-space: pre-wrap;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .quick-examples {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .quick-example-btn {
+      padding: 8px;
+      background: var(--bg-darker);
+      border: 1px solid var(--border);
+      color: var(--text-light);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+
+    .quick-example-btn:hover {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🤖 AI Script Commander</h1>
+      <div class="status" id="statusMessage">🚀 Extension prête</div>
+    </div>
+
+    <!-- Configuration API -->
+    <div class="section">
+      <h3>🔑 Configuration API</h3>
+      <div class="form-group">
+        <label for="apiKeyInput">Clé API DeepSeek</label>
+        <input type="password" id="apiKeyInput" placeholder="sk-...">
+      </div>
+    </div>
+
+    <!-- Générateur de Scripts -->
+    <div class="section">
+      <h3>✨ Générateur de Scripts IA</h3>
+      
+      <div class="form-group">
+        <label for="scriptType">Type de Script</label>
+        <select id="scriptType">
+          <option value="powershell">PowerShell</option>
+          <option value="python">Python</option>
+          <option value="bash">Bash</option>
+          <option value="javascript">JavaScript</option>
+          <option value="cmd">CMD/Batch</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="scriptInput">Code ou Description</label>
+        <textarea id="scriptInput" placeholder="Entrez votre code ou décrivez ce que vous voulez faire..."></textarea>
+      </div>
+
+      <div class="button-group">
+        <button id="generateTaskBtn" class="btn btn-primary">✨ Générer Script</button>
+        <button id="analyzeBtn" class="btn btn-secondary">🔍 Analyser</button>
+        <button id="optimizeBtn" class="btn btn-secondary">⚡ Optimiser</button>
+        <button id="executeBtn" class="btn btn-success">▶️ Exécuter</button>
+        <button id="saveBtn" class="btn btn-secondary">💾 Sauvegarder</button>
+        <button id="clearBtn" class="btn btn-danger">🗑️ Effacer</button>
+      </div>
+
+      <!-- Exemples rapides -->
+      <div style="margin-top: 20px;">
+        <label>⚡ Exemples Rapides</label>
+        <div class="quick-examples">
+          <button class="quick-example-btn" data-task="file-organizer">📁 Organisateur de fichiers</button>
+          <button class="quick-example-btn" data-task="backup">💾 Script de sauvegarde</button>
+          <button class="quick-example-btn" data-task="cleaner">🧹 Nettoyeur système</button>
+          <button class="quick-example-btn" data-task="scraper">🌐 Web scraper</button>
+        </div>
+      </div>
+
+      <!-- Résultats -->
+      <div class="result-area" id="resultArea">Les résultats apparaîtront ici...</div>
+    </div>
+
+    <!-- Auto-Fill Formulaires -->
+    <div class="section">
+      <h3>📝 Auto-Fill Formulaires</h3>
+      
+      <div class="button-group">
+        <button id="detectFormsBtn" class="btn btn-primary">🔍 Détecter Formulaires</button>
+        <button id="fillFormsBtn" class="btn btn-success">✏️ Remplir Formulaires</button>
+      </div>
+
+      <div class="result-area" id="formResults">Détection de formulaires...</div>
+    </div>
+
+    <!-- Web Scraping -->
+    <div class="section">
+      <h3>🌐 Web Scraping</h3>
+      
+      <div class="form-group">
+        <label for="scrapeUrl">URL à Scraper</label>
+        <input type="text" id="scrapeUrl" placeholder="https://example.com">
+      </div>
+
+      <div class="form-group">
+        <label for="scrapeType">Type de Données</label>
+        <select id="scrapeType">
+          <option value="links">Liens</option>
+          <option value="texts">Textes</option>
+          <option value="images">Images</option>
+          <option value="tables">Tables</option>
+          <option value="scripts">Scripts</option>
+        </select>
+      </div>
+
+      <div class="button-group">
+        <button id="startScrapingBtn" class="btn btn-primary">🚀 Démarrer Scraping</button>
+        <button id="generateScraperBtn" class="btn btn-secondary">✨ Générer Scraper</button>
+      </div>
+
+      <div class="result-area" id="scrapeResults">Résultats du scraping...</div>
+    </div>
+  </div>
+
+  <script src="sidebar.js"></script>
+</body>
+</html>
