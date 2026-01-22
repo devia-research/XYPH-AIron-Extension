@@ -1,0 +1,125 @@
+{
+  "total_tests": 23,
+  "details": [
+    {
+      "Result": "PASS",
+      "Message": "",
+      "Test": "manifest.json existe"
+    },
+    {
+      "Result": "PASS",
+      "Message": "",
+      "Test": "background.js existe"
+    },
+    {
+      "Result": "FAIL",
+      "Message": "",
+      "Test": "sidebar.js existe"
+    },
+    {
+      "Result": "FAIL",
+      "Message": "",
+      "Test": "popup.html existe"
+    },
+    {
+      "Result": "FAIL",
+      "Message": "",
+      "Test": "popup.js existe"
+    },
+    {
+      "Result": "PASS",
+      "Message": "",
+      "Test": "Manifest version 3"
+    },
+    {
+      "Result": "PASS",
+      "Message": "",
+      "Test": "Nom de l'extension défini"
+    },
+    {
+      "Result": "PASS",
+      "Message": "",
+      "Test": "Version définie"
+    },
+    {
+      "Result": "PASS",
+      "Message": "",
+      "Test": "Permission activeTab"
+    },
+    {
+      "Result": "PASS",
+      "Message": "",
+      "Test": "Action définie"
+    },
+    {
+      "Result": "PASS",
+      "Message": "",
+      "Test": "background.js utilise chrome.action"
+    },
+    {
+      "Result": "PASS",
+      "Message": "",
+      "Test": "background.js n'utilise pas l'ancienne API"
+    },
+    {
+      "Result": "FAIL",
+      "Message": "",
+      "Test": "sidebar.js accessible"
+    },
+    {
+      "Result": "FAIL",
+      "Message": "",
+      "Test": "popup.js accessible"
+    },
+    {
+      "Result": "FAIL",
+      "Message": "",
+      "Test": "popup.html accessible"
+    },
+    {
+      "Result": "FAIL",
+      "Message": "",
+      "Test": "Fichier sidebar HTML présent"
+    },
+    {
+      "Result": "PASS",
+      "Message": "",
+      "Test": "manifest.json taille raisonnable"
+    },
+    {
+      "Result": "PASS",
+      "Message": "",
+      "Test": "manifest.json non vide"
+    },
+    {
+      "Result": "PASS",
+      "Message": "",
+      "Test": "background.js taille raisonnable"
+    },
+    {
+      "Result": "PASS",
+      "Message": "",
+      "Test": "background.js non vide"
+    },
+    {
+      "Result": "PASS",
+      "Message": "",
+      "Test": "manifest.json syntaxe JSON valide"
+    },
+    {
+      "Result": "FAIL",
+      "Message": "Permissions sensibles détectées",
+      "Test": "Aucune permission dangereuse"
+    },
+    {
+      "Result": "PASS",
+      "Message": "",
+      "Test": "Permission storage présente"
+    }
+  ],
+  "timestamp": "2026-01-22 20:40:42",
+  "exit_code": 2,
+  "passed": 15,
+  "success_rate": 65.2,
+  "failed": 8
+}
