@@ -3130,37 +3130,76 @@ De quoi as-tu besoin ?`;
                 content: prompt
             });
 
-            const response = await fetch(this.settings.apiEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${this.apiKey}`
-                },
-                body: JSON.stringify({
-                    model: this.settings.aiModel,
-                    messages: messages,
-                    max_tokens: this.settings.maxTokens,
-                    temperature: this.settings.temperature
-                })
+            const requestBody = JSON.stringify({
+                model: this.settings.aiModel,
+                messages: messages,
+                max_tokens: this.settings.maxTokens,
+                temperature: this.settings.temperature
             });
+            const requestHeaders = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.apiKey}`
+            };
 
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(`API Error ${response.status}: ${errorData.error?.message || 'Erreur inconnue'}`);
+            // Retry loop with exponential backoff for transient failures
+            const MAX_RETRIES = 2;
+            let lastError;
+            for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+                if (attempt > 0) {
+                    await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, attempt - 1)));
+                }
+                try {
+                    const response = await this._fetchWithTimeout(
+                        this.settings.apiEndpoint,
+                        { method: 'POST', headers: requestHeaders, body: requestBody }
+                    );
+
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({}));
+                        const err = new Error(`API Error ${response.status}: ${errorData.error?.message || 'Erreur inconnue'}`);
+                        if ((response.status === 429 || response.status === 503) && attempt < MAX_RETRIES) {
+                            lastError = err;
+                            continue;
+                        }
+                        throw err;
+                    }
+
+                    const data = await response.json();
+                    if (data.choices && data.choices[0] && data.choices[0].message) {
+                        return data.choices[0].message.content;
+                    } else {
+                        throw new Error('Format de réponse API invalide');
+                    }
+                } catch (err) {
+                    const retryable = err.name === 'AbortError' || err.name === 'TypeError';
+                    if (retryable && attempt < MAX_RETRIES) {
+                        lastError = err;
+                        continue;
+                    }
+                    throw err;
+                }
             }
-
-            const data = await response.json();
-
-            if (data.choices && data.choices[0] && data.choices[0].message) {
-                return data.choices[0].message.content;
-            } else {
-                throw new Error('Format de réponse API invalide');
-            }
+            throw lastError;
 
         } catch (error) {
             console.error('callAI error:', error);
             throw error;
         }
+    }
+
+    /**
+     * Wraps fetch() with an AbortController deadline (default 30 s).
+     * Prevents API calls from hanging indefinitely.
+     * @param {string} url
+     * @param {Object} options  — standard fetch init options
+     * @param {number} [timeoutMs=30000]
+     * @returns {Promise<Response>}
+     */
+    _fetchWithTimeout(url, options = {}, timeoutMs = 30000) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+        return fetch(url, { ...options, signal: controller.signal })
+            .finally(() => clearTimeout(timeoutId));
     }
 
     // Méthode pour générer une réponse rapide sans IA

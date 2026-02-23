@@ -1,3 +1,6 @@
+// Load orchestrator for multi-provider fallback support
+importScripts('orchestrator.js');
+
 // Background service worker for AI Script Commander
 class BackgroundService {
     constructor() {
@@ -24,7 +27,29 @@ class BackgroundService {
                     const aiResult = await this.assistWithAI(request.script, request.type, request.aiAction, request.apiKey);
                     sendResponse({ result: aiResult });
                     break;
-                    
+
+                case 'orchestratedAI': {
+                    const orchestrator = new AgentOrchestrator();
+                    const orchResult = await orchestrator.runWithFallback(
+                        request.prompt,
+                        request.providerChain || [],
+                        {
+                            systemContext: request.systemContext || null,
+                            maxTokens: request.maxTokens || 2000,
+                            temperature: request.temperature || 0.7
+                        }
+                    );
+                    sendResponse({ result: orchResult.result, usedProvider: orchResult.usedProvider });
+                    break;
+                }
+
+                case 'providerHealthCheck': {
+                    const hcOrchestrator = new AgentOrchestrator();
+                    const isHealthy = await hcOrchestrator.healthCheck(request.provider, request.apiKey);
+                    sendResponse({ healthy: isHealthy, provider: request.provider });
+                    break;
+                }
+
                 case 'webScraping':
                     const scrapingResult = await this.performWebScraping(request.url, request.type, request.filter);
                     sendResponse({ results: scrapingResult });
